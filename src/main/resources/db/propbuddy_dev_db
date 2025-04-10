@@ -1,0 +1,297 @@
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               8.0.41 - MySQL Community Server - GPL
+-- Server OS:                    Win64
+-- HeidiSQL Version:             12.10.0.7000
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+-- Dumping database structure for propbuddy_dev_db
+CREATE DATABASE IF NOT EXISTS `propbuddy_dev_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `propbuddy_dev_db`;
+
+-- Dumping structure for table propbuddy_dev_db.contact_us
+CREATE TABLE IF NOT EXISTS `contact_us` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `created_by` varchar(255) DEFAULT NULL,
+  `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_by` varchar(255) DEFAULT NULL,
+  `last_updated_date` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `email` varchar(255) DEFAULT NULL,
+  `message` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `subject` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.contact_us: ~0 rows (approximately)
+
+-- Dumping structure for table propbuddy_dev_db.notifications
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `notification_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `message` text,
+  `is_read` tinyint(1) DEFAULT '0',
+  `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`notification_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.notifications: ~0 rows (approximately)
+
+-- Dumping structure for table propbuddy_dev_db.payments
+CREATE TABLE IF NOT EXISTS `payments` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_for` varchar(100) NOT NULL,
+  `reference_id` varchar(100) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'PENDING',
+  `paid_on` datetime DEFAULT CURRENT_TIMESTAMP,
+  `remarks` text,
+  ` property_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.payments: ~2 rows (approximately)
+INSERT INTO `payments` (`id`, `user_id`, `amount`, `payment_for`, `reference_id`, `payment_method`, `status`, `paid_on`, `remarks`, ` property_id`) VALUES
+	(1, 1, 599.00, 'SUBSCRIPTION', 'TXN123ABC456', 'UPI', 'SUCCESS', '2025-04-09 21:42:40', 'Annual Plan – Gold', NULL),
+	(2, 2, 149.00, 'PROPERTY_VISIT', 'TXN456DEF789', 'CARD', 'SUCCESS', '2025-04-09 21:42:40', 'One-time property visit', NULL);
+
+-- Dumping structure for table propbuddy_dev_db.properties
+CREATE TABLE IF NOT EXISTS `properties` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `property_type_id` int NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `address` text NOT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `postal_code` varchar(20) DEFAULT NULL,
+  `country` varchar(100) DEFAULT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `longitude` decimal(10,7) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `property_type_id` (`property_type_id`),
+  KEY `FK_properties_users` (`user_id`),
+  CONSTRAINT `FK_properties_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `properties_ibfk_2` FOREIGN KEY (`property_type_id`) REFERENCES `property_types` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.properties: ~3 rows (approximately)
+INSERT INTO `properties` (`id`, `user_id`, `property_type_id`, `name`, `address`, `city`, `state`, `postal_code`, `country`, `latitude`, `longitude`, `is_active`, `created_at`) VALUES
+	(7, 1, 2, 'Sunset Villa', '123 Sunset Blvd, Hilltop Area', 'Los Angeles', 'California', '90001', 'USA', 34.0522350, -118.2436830, 1, '2025-04-10 00:36:35'),
+	(8, 2, 1, 'Greenwood Estate', '456 Forest Rd, Green Valley', 'San Francisco', 'California', '94101', 'USA', 37.7749290, -122.4194180, 1, '2025-04-10 00:36:35'),
+	(9, 1, 1, 'Cityscape Condo', '654 City Square, Downtown', 'Chicago', 'Illinois', '60601', 'USA', 41.8781130, -87.6297990, 1, '2025-04-10 00:36:35');
+
+-- Dumping structure for table propbuddy_dev_db.property_media
+CREATE TABLE IF NOT EXISTS `property_media` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `property_id` int NOT NULL,
+  `visit_id` int DEFAULT NULL,
+  `file_url` text NOT NULL,
+  `media_type` varchar(20) DEFAULT NULL,
+  `uploaded_on` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.property_media: ~0 rows (approximately)
+
+-- Dumping structure for table propbuddy_dev_db.property_types
+CREATE TABLE IF NOT EXISTS `property_types` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(100) NOT NULL DEFAULT '0',
+  `description` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.property_types: ~7 rows (approximately)
+INSERT INTO `property_types` (`id`, `type_name`, `description`) VALUES
+	(1, 'Apartment', 'Flat in an apartment building'),
+	(2, 'Independent House', 'Standalone residential house'),
+	(3, 'Villa', 'Luxury villa with premium features'),
+	(4, 'Plot', 'Vacant land or plot without construction'),
+	(5, 'Commercial Space', 'Office, shop, or showroom used for business'),
+	(6, 'Farmhouse', 'Rural property used for leisure or agriculture'),
+	(7, 'Industrial', 'Warehouse, factory, or industrial site');
+
+-- Dumping structure for table propbuddy_dev_db.property_visits
+CREATE TABLE IF NOT EXISTS `property_visits` (
+  `visit_id` int NOT NULL AUTO_INCREMENT,
+  `property_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `visitor_id` int DEFAULT NULL,
+  `visit_date` datetime NOT NULL,
+  `purpose` varchar(255) DEFAULT NULL,
+  `status` enum('SCHEDULED','COMPLETED','CANCELLED') DEFAULT 'SCHEDULED',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`visit_id`),
+  KEY `property_id` (`property_id`),
+  KEY `user_id` (`user_id`),
+  KEY `visitor_id` (`visitor_id`),
+  CONSTRAINT `property_visits_ibfk_1` FOREIGN KEY (`property_id`) REFERENCES `properties` (`id`),
+  CONSTRAINT `property_visits_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `property_visits_ibfk_3` FOREIGN KEY (`visitor_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.property_visits: ~0 rows (approximately)
+
+-- Dumping structure for table propbuddy_dev_db.roles
+CREATE TABLE IF NOT EXISTS `roles` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_by` varchar(255) DEFAULT NULL,
+  `last_updated_date` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.roles: ~5 rows (approximately)
+INSERT INTO `roles` (`id`, `name`, `created_by`, `created_date`, `last_updated_by`, `last_updated_date`) VALUES
+	(1, 'OWNERr', NULL, '2025-04-09 23:10:02', NULL, '2025-04-09 23:10:03'),
+	(2, 'VISITOR', NULL, '2025-04-09 23:10:02', NULL, '2025-04-09 23:10:03'),
+	(3, 'ADMIN', NULL, '2025-04-09 23:10:02', NULL, '2025-04-09 23:10:03'),
+	(4, 'SUPPORT', NULL, '2025-04-09 23:10:02', NULL, '2025-04-09 23:10:03'),
+	(5, 'SUPER_ADMIN', NULL, '2025-04-09 23:10:02', NULL, '2025-04-09 23:10:03');
+
+-- Dumping structure for table propbuddy_dev_db.subscriptions
+CREATE TABLE IF NOT EXISTS `subscriptions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` text,
+  `price` decimal(10,2) NOT NULL,
+  `duration_in_days` int NOT NULL,
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.subscriptions: ~3 rows (approximately)
+INSERT INTO `subscriptions` (`id`, `name`, `description`, `price`, `duration_in_days`, `is_active`, `created_at`) VALUES
+	(1, 'Monthly Plan', 'Basic care package with 1 visit/month', 499.00, 30, 1, '2025-04-10 00:03:27'),
+	(2, 'Quarterly Plan', 'Better value with 3 visits/quarter', 1299.00, 90, 1, '2025-04-10 00:03:27'),
+	(3, 'Yearly Plan', 'Best value – 12 visits/year', 4499.00, 365, 1, '2025-04-10 00:03:27');
+
+-- Dumping structure for table propbuddy_dev_db.support_tickets
+CREATE TABLE IF NOT EXISTS `support_tickets` (
+  `ticket_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `subject` varchar(255) DEFAULT NULL,
+  `message` text,
+  `status` varchar(50) DEFAULT 'OPEN',
+  `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ticket_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `support_tickets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.support_tickets: ~0 rows (approximately)
+
+-- Dumping structure for table propbuddy_dev_db.transactions
+CREATE TABLE IF NOT EXISTS `transactions` (
+  `transaction_id` int NOT NULL AUTO_INCREMENT,
+  `payment_id` int DEFAULT NULL,
+  `user_id` int NOT NULL,
+  `transaction_type` varchar(50) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `status` varchar(50) DEFAULT 'COMPLETED',
+  `mode` varchar(50) DEFAULT NULL,
+  `description` text,
+  `transaction_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`transaction_id`),
+  KEY `payment_id` (`payment_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`id`),
+  CONSTRAINT `transactions_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.transactions: ~0 rows (approximately)
+
+-- Dumping structure for table propbuddy_dev_db.users
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `full_name` varchar(100) DEFAULT NULL,
+  `email` varchar(150) DEFAULT NULL,
+  `phone_number` varchar(150) DEFAULT NULL,
+  `password_hash` varchar(150) DEFAULT NULL,
+  `created_on` timestamp NULL DEFAULT NULL,
+  `updated_on` timestamp NULL DEFAULT NULL,
+  `last_login` datetime DEFAULT NULL,
+  `address` text,
+  `email_verified` bit(1) DEFAULT NULL,
+  `phone_verified` bit(1) DEFAULT NULL,
+  `referral_code` int DEFAULT NULL,
+  `auth_provider` varchar(50) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_by` varchar(255) DEFAULT NULL,
+  `last_updated_date` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.users: ~2 rows (approximately)
+INSERT INTO `users` (`id`, `full_name`, `email`, `phone_number`, `password_hash`, `created_on`, `updated_on`, `last_login`, `address`, `email_verified`, `phone_verified`, `referral_code`, `auth_provider`, `created_by`, `created_date`, `last_updated_by`, `last_updated_date`) VALUES
+	(1, 'Rajesh Kumar', 'rajesh@example.com', '+919876543210', 'hashedpassword123', '2025-04-10 00:11:47', '2025-04-10 00:11:47', '2025-04-09 20:11:47', '123 MG Road, Bangalore, Karnataka, India', b'1', b'1', NULL, 'LOCAL', NULL, '2025-04-09 23:10:09', NULL, '2025-04-09 23:10:09'),
+	(2, 'Priya Sharma', 'priya@example.com', '+919123456789', 'hashedpassword456', '2025-04-10 00:11:47', '2025-04-10 00:11:47', '2025-04-09 20:11:47', '22 Park Street, Hyderabad, Telangana, India', b'1', b'0', NULL, 'GOOGLE', NULL, '2025-04-09 23:10:09', NULL, '2025-04-09 23:10:09');
+
+-- Dumping structure for table propbuddy_dev_db.user_roles
+CREATE TABLE IF NOT EXISTS `user_roles` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `role_id` bigint DEFAULT NULL,
+  `assigned_at` timestamp NULL DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_by` varchar(255) DEFAULT NULL,
+  `last_updated_date` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `FKh8ciramu9cc9q3qcqiv4ue8a6` (`role_id`),
+  KEY `FKhfh9dx7w3ubf1co1vdev94g3f` (`user_id`),
+  CONSTRAINT `FKh8ciramu9cc9q3qcqiv4ue8a6` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
+  CONSTRAINT `FKhfh9dx7w3ubf1co1vdev94g3f` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.user_roles: ~0 rows (approximately)
+
+-- Dumping structure for table propbuddy_dev_db.user_subscriptions
+CREATE TABLE IF NOT EXISTS `user_subscriptions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `subscription_id` int NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `payment_status` varchar(50) DEFAULT 'PENDING',
+  `payment_method` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `subscription_id` (`subscription_id`),
+  KEY `FK_user_subscriptions_users` (`user_id`),
+  CONSTRAINT `FK_user_subscriptions_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `user_subscriptions_ibfk_2` FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table propbuddy_dev_db.user_subscriptions: ~0 rows (approximately)
+
+/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
