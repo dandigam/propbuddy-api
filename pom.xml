@@ -9,11 +9,11 @@
 		<version>3.4.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.reg.check.pro</groupId>
-	<artifactId>reg-check-pro</artifactId>
+	<groupId>com.prop.app</groupId>
+	<artifactId>prop-buddy-app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>reg-check-pro</name>
-	<description>reg-check-pro</description>
+	<name>prop-buddy-app</name>
+	<description>prop-buddy-app</description>
 	<url />
 	<licenses>
 		<license />
@@ -77,11 +77,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
 		</dependency>
+
+
 
 	</dependencies>
 
